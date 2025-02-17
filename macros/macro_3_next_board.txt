@@ -1,0 +1,34 @@
+    next(board[ROW][COL]) :=
+        case      
+            board[ROW][COL] = wall : wall;
+
+            board[ROW][COL] = man & next(direction) = up    & board[ROW+(-1)][COL] = vacant : vacant;
+            board[ROW][COL] = man & next(direction) = up    & board[ROW+(-1)][COL] = box & board[ROW+(-2)][COL] = vacant : vacant;
+            
+            board[ROW][COL] = man & next(direction) = down  & board[ROW+1][COL] = vacant : vacant;
+            board[ROW][COL] = man & next(direction) = down  & board[ROW+1][COL] = box & board[ROW+2][COL] = vacant : vacant;
+
+            board[ROW][COL] = man & next(direction) = right & board[ROW][COL+1] = vacant : vacant;
+            board[ROW][COL] = man & next(direction) = right & board[ROW][COL+1] = box & board[ROW][COL+2] = vacant : vacant;
+
+            board[ROW][COL] = man & next(direction) = left  & board[ROW][COL+(-1)] = vacant : vacant;
+            board[ROW][COL] = man & next(direction) = left  & board[ROW][COL+(-1)] = box & board[ROW][COL+(-2)] = vacant : vacant;
+
+            next(direction) = up & board[ROW][COL] = vacant & board[ROW+1][COL] = man : man;
+            next(direction) = up & board[ROW+(-1)][COL] = vacant & board[ROW][COL] = box & board[ROW+1][COL] = man : man;
+            next(direction) = up & board[ROW][COL] = vacant & board[ROW+1][COL] = box & board[ROW+2][COL] = man : box;
+
+            next(direction) = down & board[ROW][COL] = vacant & board[ROW+(-1)][COL] = man : man;
+            next(direction) = down & board[ROW+1][COL] = vacant & board[ROW][COL] = box & board[ROW+(-1)][COL] = man : man;
+            next(direction) = down & board[ROW][COL] = vacant & board[ROW+(-1)][COL] = box & board[ROW+(-2)][COL] = man : box;
+
+            next(direction) = right & board[ROW][COL] = vacant & board[ROW][COL+(-1)] = man : man;
+            next(direction) = right & board[ROW][COL+1] = vacant & board[ROW][COL] = box & board[ROW][COL+(-1)] = man : man;
+            next(direction) = right & board[ROW][COL] = vacant & board[ROW][COL+(-1)] = box & board[ROW][COL+(-2)] = man : box;
+
+            next(direction) = left & board[ROW][COL] = vacant & board[ROW][COL+1] = man : man;
+            next(direction) = left & board[ROW][COL+(-1)] = vacant & board[ROW][COL] = box & board[ROW][COL+1] = man : man;
+            next(direction) = left & board[ROW][COL] = vacant & board[ROW][COL+1] = box & board[ROW][COL+2] = man : box;
+
+            TRUE: board[ROW][COL];
+        esac;

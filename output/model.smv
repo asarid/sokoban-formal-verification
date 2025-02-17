@@ -1,0 +1,937 @@
+MODULE main
+
+  VAR
+      board   : array 1..5 of array 1..5 of {wall, box, man, vacant};
+      
+      direction : {stay, up, down, right, left};
+
+  
+  DEFINE
+      
+    min_x := 1;
+    max_x := 5;
+    min_y := 1;
+    max_y := 5;
+
+		is_target_1_occupied := board[2][3] = box;
+		is_target_2_occupied := board[5][5] = box;
+
+
+
+		victory := is_target_1_occupied & is_target_2_occupied;
+
+	ASSIGN
+
+		init(direction) := stay;
+
+		init(board[1][1]) := man;
+		init(board[1][2]) := vacant;
+		init(board[1][3]) := vacant;
+		init(board[1][4]) := vacant;
+		init(board[1][5]) := vacant;
+
+		init(board[2][1]) := vacant;
+		init(board[2][2]) := vacant;
+		init(board[2][3]) := vacant;
+		init(board[2][4]) := box;
+		init(board[2][5]) := vacant;
+
+		init(board[3][1]) := vacant;
+		init(board[3][2]) := vacant;
+		init(board[3][3]) := vacant;
+		init(board[3][4]) := wall;
+		init(board[3][5]) := wall;
+
+		init(board[4][1]) := vacant;
+		init(board[4][2]) := vacant;
+		init(board[4][3]) := box;
+		init(board[4][4]) := vacant;
+		init(board[4][5]) := vacant;
+
+		init(board[5][1]) := vacant;
+		init(board[5][2]) := vacant;
+		init(board[5][3]) := vacant;
+		init(board[5][4]) := wall;
+		init(board[5][5]) := vacant;
+
+
+
+		next(direction) := {up, down, right, left};
+
+    next(board[1][1]) :=
+        case      
+            board[1][1] = wall : wall;
+            
+            -- board[1][1] = man & next(direction) = up    & board[0][1] = vacant : vacant;
+            -- board[1][1] = man & next(direction) = up    & board[0][1] = box & board[-1][1] = vacant : vacant;
+                        
+            board[1][1] = man & next(direction) = down  & board[2][1] = vacant : vacant;
+            board[1][1] = man & next(direction) = down  & board[2][1] = box & board[3][1] = vacant : vacant;
+            
+            board[1][1] = man & next(direction) = right & board[1][2] = vacant : vacant;
+            board[1][1] = man & next(direction) = right & board[1][2] = box & board[1][3] = vacant : vacant;
+            
+            -- board[1][1] = man & next(direction) = left  & board[1][0] = vacant : vacant;
+            -- board[1][1] = man & next(direction) = left  & board[1][0] = box & board[1][-1] = vacant : vacant;
+            
+            next(direction) = up & board[1][1] = vacant & board[2][1] = man : man;
+            -- next(direction) = up & board[0][1] = vacant & board[1][1] = box & board[2][1] = man : man;
+            next(direction) = up & board[1][1] = vacant & board[2][1] = box & board[3][1] = man : box;
+            
+            -- next(direction) = down & board[1][1] = vacant & board[0][1] = man : man;
+            -- next(direction) = down & board[2][1] = vacant & board[1][1] = box & board[0][1] = man : man;
+            -- next(direction) = down & board[1][1] = vacant & board[0][1] = box & board[-1][1] = man : box;
+            
+            -- next(direction) = right & board[1][1] = vacant & board[1][0] = man : man;
+            -- next(direction) = right & board[1][2] = vacant & board[1][1] = box & board[1][0] = man : man;
+            -- next(direction) = right & board[1][1] = vacant & board[1][0] = box & board[1][-1] = man : box;
+            
+            next(direction) = left & board[1][1] = vacant & board[1][2] = man : man;
+            -- next(direction) = left & board[1][0] = vacant & board[1][1] = box & board[1][2] = man : man;
+            next(direction) = left & board[1][1] = vacant & board[1][2] = box & board[1][3] = man : box;
+            
+            TRUE: board[1][1];
+        esac;
+
+    next(board[1][2]) :=
+        case      
+            board[1][2] = wall : wall;
+            
+            -- board[1][2] = man & next(direction) = up    & board[0][2] = vacant : vacant;
+            -- board[1][2] = man & next(direction) = up    & board[0][2] = box & board[-1][2] = vacant : vacant;
+                        
+            board[1][2] = man & next(direction) = down  & board[2][2] = vacant : vacant;
+            board[1][2] = man & next(direction) = down  & board[2][2] = box & board[3][2] = vacant : vacant;
+            
+            board[1][2] = man & next(direction) = right & board[1][3] = vacant : vacant;
+            board[1][2] = man & next(direction) = right & board[1][3] = box & board[1][4] = vacant : vacant;
+            
+            board[1][2] = man & next(direction) = left  & board[1][1] = vacant : vacant;
+            -- board[1][2] = man & next(direction) = left  & board[1][1] = box & board[1][0] = vacant : vacant;
+            
+            next(direction) = up & board[1][2] = vacant & board[2][2] = man : man;
+            -- next(direction) = up & board[0][2] = vacant & board[1][2] = box & board[2][2] = man : man;
+            next(direction) = up & board[1][2] = vacant & board[2][2] = box & board[3][2] = man : box;
+            
+            -- next(direction) = down & board[1][2] = vacant & board[0][2] = man : man;
+            -- next(direction) = down & board[2][2] = vacant & board[1][2] = box & board[0][2] = man : man;
+            -- next(direction) = down & board[1][2] = vacant & board[0][2] = box & board[-1][2] = man : box;
+            
+            next(direction) = right & board[1][2] = vacant & board[1][1] = man : man;
+            next(direction) = right & board[1][3] = vacant & board[1][2] = box & board[1][1] = man : man;
+            -- next(direction) = right & board[1][2] = vacant & board[1][1] = box & board[1][0] = man : box;
+            
+            next(direction) = left & board[1][2] = vacant & board[1][3] = man : man;
+            next(direction) = left & board[1][1] = vacant & board[1][2] = box & board[1][3] = man : man;
+            next(direction) = left & board[1][2] = vacant & board[1][3] = box & board[1][4] = man : box;
+            
+            TRUE: board[1][2];
+        esac;
+
+    next(board[1][3]) :=
+        case      
+            board[1][3] = wall : wall;
+            
+            -- board[1][3] = man & next(direction) = up    & board[0][3] = vacant : vacant;
+            -- board[1][3] = man & next(direction) = up    & board[0][3] = box & board[-1][3] = vacant : vacant;
+                        
+            board[1][3] = man & next(direction) = down  & board[2][3] = vacant : vacant;
+            board[1][3] = man & next(direction) = down  & board[2][3] = box & board[3][3] = vacant : vacant;
+            
+            board[1][3] = man & next(direction) = right & board[1][4] = vacant : vacant;
+            board[1][3] = man & next(direction) = right & board[1][4] = box & board[1][5] = vacant : vacant;
+            
+            board[1][3] = man & next(direction) = left  & board[1][2] = vacant : vacant;
+            board[1][3] = man & next(direction) = left  & board[1][2] = box & board[1][1] = vacant : vacant;
+            
+            next(direction) = up & board[1][3] = vacant & board[2][3] = man : man;
+            -- next(direction) = up & board[0][3] = vacant & board[1][3] = box & board[2][3] = man : man;
+            next(direction) = up & board[1][3] = vacant & board[2][3] = box & board[3][3] = man : box;
+            
+            -- next(direction) = down & board[1][3] = vacant & board[0][3] = man : man;
+            -- next(direction) = down & board[2][3] = vacant & board[1][3] = box & board[0][3] = man : man;
+            -- next(direction) = down & board[1][3] = vacant & board[0][3] = box & board[-1][3] = man : box;
+            
+            next(direction) = right & board[1][3] = vacant & board[1][2] = man : man;
+            next(direction) = right & board[1][4] = vacant & board[1][3] = box & board[1][2] = man : man;
+            next(direction) = right & board[1][3] = vacant & board[1][2] = box & board[1][1] = man : box;
+            
+            next(direction) = left & board[1][3] = vacant & board[1][4] = man : man;
+            next(direction) = left & board[1][2] = vacant & board[1][3] = box & board[1][4] = man : man;
+            next(direction) = left & board[1][3] = vacant & board[1][4] = box & board[1][5] = man : box;
+            
+            TRUE: board[1][3];
+        esac;
+
+    next(board[1][4]) :=
+        case      
+            board[1][4] = wall : wall;
+            
+            -- board[1][4] = man & next(direction) = up    & board[0][4] = vacant : vacant;
+            -- board[1][4] = man & next(direction) = up    & board[0][4] = box & board[-1][4] = vacant : vacant;
+                        
+            board[1][4] = man & next(direction) = down  & board[2][4] = vacant : vacant;
+            board[1][4] = man & next(direction) = down  & board[2][4] = box & board[3][4] = vacant : vacant;
+            
+            board[1][4] = man & next(direction) = right & board[1][5] = vacant : vacant;
+            -- board[1][4] = man & next(direction) = right & board[1][5] = box & board[1][6] = vacant : vacant;
+            
+            board[1][4] = man & next(direction) = left  & board[1][3] = vacant : vacant;
+            board[1][4] = man & next(direction) = left  & board[1][3] = box & board[1][2] = vacant : vacant;
+            
+            next(direction) = up & board[1][4] = vacant & board[2][4] = man : man;
+            -- next(direction) = up & board[0][4] = vacant & board[1][4] = box & board[2][4] = man : man;
+            next(direction) = up & board[1][4] = vacant & board[2][4] = box & board[3][4] = man : box;
+            
+            -- next(direction) = down & board[1][4] = vacant & board[0][4] = man : man;
+            -- next(direction) = down & board[2][4] = vacant & board[1][4] = box & board[0][4] = man : man;
+            -- next(direction) = down & board[1][4] = vacant & board[0][4] = box & board[-1][4] = man : box;
+            
+            next(direction) = right & board[1][4] = vacant & board[1][3] = man : man;
+            next(direction) = right & board[1][5] = vacant & board[1][4] = box & board[1][3] = man : man;
+            next(direction) = right & board[1][4] = vacant & board[1][3] = box & board[1][2] = man : box;
+            
+            next(direction) = left & board[1][4] = vacant & board[1][5] = man : man;
+            next(direction) = left & board[1][3] = vacant & board[1][4] = box & board[1][5] = man : man;
+            -- next(direction) = left & board[1][4] = vacant & board[1][5] = box & board[1][6] = man : box;
+            
+            TRUE: board[1][4];
+        esac;
+
+    next(board[1][5]) :=
+        case      
+            board[1][5] = wall : wall;
+            
+            -- board[1][5] = man & next(direction) = up    & board[0][5] = vacant : vacant;
+            -- board[1][5] = man & next(direction) = up    & board[0][5] = box & board[-1][5] = vacant : vacant;
+                        
+            board[1][5] = man & next(direction) = down  & board[2][5] = vacant : vacant;
+            board[1][5] = man & next(direction) = down  & board[2][5] = box & board[3][5] = vacant : vacant;
+            
+            -- board[1][5] = man & next(direction) = right & board[1][6] = vacant : vacant;
+            -- board[1][5] = man & next(direction) = right & board[1][6] = box & board[1][7] = vacant : vacant;
+            
+            board[1][5] = man & next(direction) = left  & board[1][4] = vacant : vacant;
+            board[1][5] = man & next(direction) = left  & board[1][4] = box & board[1][3] = vacant : vacant;
+            
+            next(direction) = up & board[1][5] = vacant & board[2][5] = man : man;
+            -- next(direction) = up & board[0][5] = vacant & board[1][5] = box & board[2][5] = man : man;
+            next(direction) = up & board[1][5] = vacant & board[2][5] = box & board[3][5] = man : box;
+            
+            -- next(direction) = down & board[1][5] = vacant & board[0][5] = man : man;
+            -- next(direction) = down & board[2][5] = vacant & board[1][5] = box & board[0][5] = man : man;
+            -- next(direction) = down & board[1][5] = vacant & board[0][5] = box & board[-1][5] = man : box;
+            
+            next(direction) = right & board[1][5] = vacant & board[1][4] = man : man;
+            -- next(direction) = right & board[1][6] = vacant & board[1][5] = box & board[1][4] = man : man;
+            next(direction) = right & board[1][5] = vacant & board[1][4] = box & board[1][3] = man : box;
+            
+            -- next(direction) = left & board[1][5] = vacant & board[1][6] = man : man;
+            -- next(direction) = left & board[1][4] = vacant & board[1][5] = box & board[1][6] = man : man;
+            -- next(direction) = left & board[1][5] = vacant & board[1][6] = box & board[1][7] = man : box;
+            
+            TRUE: board[1][5];
+        esac;
+
+    next(board[2][1]) :=
+        case      
+            board[2][1] = wall : wall;
+            
+            board[2][1] = man & next(direction) = up    & board[1][1] = vacant : vacant;
+            -- board[2][1] = man & next(direction) = up    & board[1][1] = box & board[0][1] = vacant : vacant;
+                        
+            board[2][1] = man & next(direction) = down  & board[3][1] = vacant : vacant;
+            board[2][1] = man & next(direction) = down  & board[3][1] = box & board[4][1] = vacant : vacant;
+            
+            board[2][1] = man & next(direction) = right & board[2][2] = vacant : vacant;
+            board[2][1] = man & next(direction) = right & board[2][2] = box & board[2][3] = vacant : vacant;
+            
+            -- board[2][1] = man & next(direction) = left  & board[2][0] = vacant : vacant;
+            -- board[2][1] = man & next(direction) = left  & board[2][0] = box & board[2][-1] = vacant : vacant;
+            
+            next(direction) = up & board[2][1] = vacant & board[3][1] = man : man;
+            next(direction) = up & board[1][1] = vacant & board[2][1] = box & board[3][1] = man : man;
+            next(direction) = up & board[2][1] = vacant & board[3][1] = box & board[4][1] = man : box;
+            
+            next(direction) = down & board[2][1] = vacant & board[1][1] = man : man;
+            next(direction) = down & board[3][1] = vacant & board[2][1] = box & board[1][1] = man : man;
+            -- next(direction) = down & board[2][1] = vacant & board[1][1] = box & board[0][1] = man : box;
+            
+            -- next(direction) = right & board[2][1] = vacant & board[2][0] = man : man;
+            -- next(direction) = right & board[2][2] = vacant & board[2][1] = box & board[2][0] = man : man;
+            -- next(direction) = right & board[2][1] = vacant & board[2][0] = box & board[2][-1] = man : box;
+            
+            next(direction) = left & board[2][1] = vacant & board[2][2] = man : man;
+            -- next(direction) = left & board[2][0] = vacant & board[2][1] = box & board[2][2] = man : man;
+            next(direction) = left & board[2][1] = vacant & board[2][2] = box & board[2][3] = man : box;
+            
+            TRUE: board[2][1];
+        esac;
+
+    next(board[2][2]) :=
+        case      
+            board[2][2] = wall : wall;
+            
+            board[2][2] = man & next(direction) = up    & board[1][2] = vacant : vacant;
+            -- board[2][2] = man & next(direction) = up    & board[1][2] = box & board[0][2] = vacant : vacant;
+                        
+            board[2][2] = man & next(direction) = down  & board[3][2] = vacant : vacant;
+            board[2][2] = man & next(direction) = down  & board[3][2] = box & board[4][2] = vacant : vacant;
+            
+            board[2][2] = man & next(direction) = right & board[2][3] = vacant : vacant;
+            board[2][2] = man & next(direction) = right & board[2][3] = box & board[2][4] = vacant : vacant;
+            
+            board[2][2] = man & next(direction) = left  & board[2][1] = vacant : vacant;
+            -- board[2][2] = man & next(direction) = left  & board[2][1] = box & board[2][0] = vacant : vacant;
+            
+            next(direction) = up & board[2][2] = vacant & board[3][2] = man : man;
+            next(direction) = up & board[1][2] = vacant & board[2][2] = box & board[3][2] = man : man;
+            next(direction) = up & board[2][2] = vacant & board[3][2] = box & board[4][2] = man : box;
+            
+            next(direction) = down & board[2][2] = vacant & board[1][2] = man : man;
+            next(direction) = down & board[3][2] = vacant & board[2][2] = box & board[1][2] = man : man;
+            -- next(direction) = down & board[2][2] = vacant & board[1][2] = box & board[0][2] = man : box;
+            
+            next(direction) = right & board[2][2] = vacant & board[2][1] = man : man;
+            next(direction) = right & board[2][3] = vacant & board[2][2] = box & board[2][1] = man : man;
+            -- next(direction) = right & board[2][2] = vacant & board[2][1] = box & board[2][0] = man : box;
+            
+            next(direction) = left & board[2][2] = vacant & board[2][3] = man : man;
+            next(direction) = left & board[2][1] = vacant & board[2][2] = box & board[2][3] = man : man;
+            next(direction) = left & board[2][2] = vacant & board[2][3] = box & board[2][4] = man : box;
+            
+            TRUE: board[2][2];
+        esac;
+
+    next(board[2][3]) :=
+        case      
+            board[2][3] = wall : wall;
+            
+            board[2][3] = man & next(direction) = up    & board[1][3] = vacant : vacant;
+            -- board[2][3] = man & next(direction) = up    & board[1][3] = box & board[0][3] = vacant : vacant;
+                        
+            board[2][3] = man & next(direction) = down  & board[3][3] = vacant : vacant;
+            board[2][3] = man & next(direction) = down  & board[3][3] = box & board[4][3] = vacant : vacant;
+            
+            board[2][3] = man & next(direction) = right & board[2][4] = vacant : vacant;
+            board[2][3] = man & next(direction) = right & board[2][4] = box & board[2][5] = vacant : vacant;
+            
+            board[2][3] = man & next(direction) = left  & board[2][2] = vacant : vacant;
+            board[2][3] = man & next(direction) = left  & board[2][2] = box & board[2][1] = vacant : vacant;
+            
+            next(direction) = up & board[2][3] = vacant & board[3][3] = man : man;
+            next(direction) = up & board[1][3] = vacant & board[2][3] = box & board[3][3] = man : man;
+            next(direction) = up & board[2][3] = vacant & board[3][3] = box & board[4][3] = man : box;
+            
+            next(direction) = down & board[2][3] = vacant & board[1][3] = man : man;
+            next(direction) = down & board[3][3] = vacant & board[2][3] = box & board[1][3] = man : man;
+            -- next(direction) = down & board[2][3] = vacant & board[1][3] = box & board[0][3] = man : box;
+            
+            next(direction) = right & board[2][3] = vacant & board[2][2] = man : man;
+            next(direction) = right & board[2][4] = vacant & board[2][3] = box & board[2][2] = man : man;
+            next(direction) = right & board[2][3] = vacant & board[2][2] = box & board[2][1] = man : box;
+            
+            next(direction) = left & board[2][3] = vacant & board[2][4] = man : man;
+            next(direction) = left & board[2][2] = vacant & board[2][3] = box & board[2][4] = man : man;
+            next(direction) = left & board[2][3] = vacant & board[2][4] = box & board[2][5] = man : box;
+            
+            TRUE: board[2][3];
+        esac;
+
+    next(board[2][4]) :=
+        case      
+            board[2][4] = wall : wall;
+            
+            board[2][4] = man & next(direction) = up    & board[1][4] = vacant : vacant;
+            -- board[2][4] = man & next(direction) = up    & board[1][4] = box & board[0][4] = vacant : vacant;
+                        
+            board[2][4] = man & next(direction) = down  & board[3][4] = vacant : vacant;
+            board[2][4] = man & next(direction) = down  & board[3][4] = box & board[4][4] = vacant : vacant;
+            
+            board[2][4] = man & next(direction) = right & board[2][5] = vacant : vacant;
+            -- board[2][4] = man & next(direction) = right & board[2][5] = box & board[2][6] = vacant : vacant;
+            
+            board[2][4] = man & next(direction) = left  & board[2][3] = vacant : vacant;
+            board[2][4] = man & next(direction) = left  & board[2][3] = box & board[2][2] = vacant : vacant;
+            
+            next(direction) = up & board[2][4] = vacant & board[3][4] = man : man;
+            next(direction) = up & board[1][4] = vacant & board[2][4] = box & board[3][4] = man : man;
+            next(direction) = up & board[2][4] = vacant & board[3][4] = box & board[4][4] = man : box;
+            
+            next(direction) = down & board[2][4] = vacant & board[1][4] = man : man;
+            next(direction) = down & board[3][4] = vacant & board[2][4] = box & board[1][4] = man : man;
+            -- next(direction) = down & board[2][4] = vacant & board[1][4] = box & board[0][4] = man : box;
+            
+            next(direction) = right & board[2][4] = vacant & board[2][3] = man : man;
+            next(direction) = right & board[2][5] = vacant & board[2][4] = box & board[2][3] = man : man;
+            next(direction) = right & board[2][4] = vacant & board[2][3] = box & board[2][2] = man : box;
+            
+            next(direction) = left & board[2][4] = vacant & board[2][5] = man : man;
+            next(direction) = left & board[2][3] = vacant & board[2][4] = box & board[2][5] = man : man;
+            -- next(direction) = left & board[2][4] = vacant & board[2][5] = box & board[2][6] = man : box;
+            
+            TRUE: board[2][4];
+        esac;
+
+    next(board[2][5]) :=
+        case      
+            board[2][5] = wall : wall;
+            
+            board[2][5] = man & next(direction) = up    & board[1][5] = vacant : vacant;
+            -- board[2][5] = man & next(direction) = up    & board[1][5] = box & board[0][5] = vacant : vacant;
+                        
+            board[2][5] = man & next(direction) = down  & board[3][5] = vacant : vacant;
+            board[2][5] = man & next(direction) = down  & board[3][5] = box & board[4][5] = vacant : vacant;
+            
+            -- board[2][5] = man & next(direction) = right & board[2][6] = vacant : vacant;
+            -- board[2][5] = man & next(direction) = right & board[2][6] = box & board[2][7] = vacant : vacant;
+            
+            board[2][5] = man & next(direction) = left  & board[2][4] = vacant : vacant;
+            board[2][5] = man & next(direction) = left  & board[2][4] = box & board[2][3] = vacant : vacant;
+            
+            next(direction) = up & board[2][5] = vacant & board[3][5] = man : man;
+            next(direction) = up & board[1][5] = vacant & board[2][5] = box & board[3][5] = man : man;
+            next(direction) = up & board[2][5] = vacant & board[3][5] = box & board[4][5] = man : box;
+            
+            next(direction) = down & board[2][5] = vacant & board[1][5] = man : man;
+            next(direction) = down & board[3][5] = vacant & board[2][5] = box & board[1][5] = man : man;
+            -- next(direction) = down & board[2][5] = vacant & board[1][5] = box & board[0][5] = man : box;
+            
+            next(direction) = right & board[2][5] = vacant & board[2][4] = man : man;
+            -- next(direction) = right & board[2][6] = vacant & board[2][5] = box & board[2][4] = man : man;
+            next(direction) = right & board[2][5] = vacant & board[2][4] = box & board[2][3] = man : box;
+            
+            -- next(direction) = left & board[2][5] = vacant & board[2][6] = man : man;
+            -- next(direction) = left & board[2][4] = vacant & board[2][5] = box & board[2][6] = man : man;
+            -- next(direction) = left & board[2][5] = vacant & board[2][6] = box & board[2][7] = man : box;
+            
+            TRUE: board[2][5];
+        esac;
+
+    next(board[3][1]) :=
+        case      
+            board[3][1] = wall : wall;
+            
+            board[3][1] = man & next(direction) = up    & board[2][1] = vacant : vacant;
+            board[3][1] = man & next(direction) = up    & board[2][1] = box & board[1][1] = vacant : vacant;
+                        
+            board[3][1] = man & next(direction) = down  & board[4][1] = vacant : vacant;
+            board[3][1] = man & next(direction) = down  & board[4][1] = box & board[5][1] = vacant : vacant;
+            
+            board[3][1] = man & next(direction) = right & board[3][2] = vacant : vacant;
+            board[3][1] = man & next(direction) = right & board[3][2] = box & board[3][3] = vacant : vacant;
+            
+            -- board[3][1] = man & next(direction) = left  & board[3][0] = vacant : vacant;
+            -- board[3][1] = man & next(direction) = left  & board[3][0] = box & board[3][-1] = vacant : vacant;
+            
+            next(direction) = up & board[3][1] = vacant & board[4][1] = man : man;
+            next(direction) = up & board[2][1] = vacant & board[3][1] = box & board[4][1] = man : man;
+            next(direction) = up & board[3][1] = vacant & board[4][1] = box & board[5][1] = man : box;
+            
+            next(direction) = down & board[3][1] = vacant & board[2][1] = man : man;
+            next(direction) = down & board[4][1] = vacant & board[3][1] = box & board[2][1] = man : man;
+            next(direction) = down & board[3][1] = vacant & board[2][1] = box & board[1][1] = man : box;
+            
+            -- next(direction) = right & board[3][1] = vacant & board[3][0] = man : man;
+            -- next(direction) = right & board[3][2] = vacant & board[3][1] = box & board[3][0] = man : man;
+            -- next(direction) = right & board[3][1] = vacant & board[3][0] = box & board[3][-1] = man : box;
+            
+            next(direction) = left & board[3][1] = vacant & board[3][2] = man : man;
+            -- next(direction) = left & board[3][0] = vacant & board[3][1] = box & board[3][2] = man : man;
+            next(direction) = left & board[3][1] = vacant & board[3][2] = box & board[3][3] = man : box;
+            
+            TRUE: board[3][1];
+        esac;
+
+    next(board[3][2]) :=
+        case      
+            board[3][2] = wall : wall;
+            
+            board[3][2] = man & next(direction) = up    & board[2][2] = vacant : vacant;
+            board[3][2] = man & next(direction) = up    & board[2][2] = box & board[1][2] = vacant : vacant;
+                        
+            board[3][2] = man & next(direction) = down  & board[4][2] = vacant : vacant;
+            board[3][2] = man & next(direction) = down  & board[4][2] = box & board[5][2] = vacant : vacant;
+            
+            board[3][2] = man & next(direction) = right & board[3][3] = vacant : vacant;
+            board[3][2] = man & next(direction) = right & board[3][3] = box & board[3][4] = vacant : vacant;
+            
+            board[3][2] = man & next(direction) = left  & board[3][1] = vacant : vacant;
+            -- board[3][2] = man & next(direction) = left  & board[3][1] = box & board[3][0] = vacant : vacant;
+            
+            next(direction) = up & board[3][2] = vacant & board[4][2] = man : man;
+            next(direction) = up & board[2][2] = vacant & board[3][2] = box & board[4][2] = man : man;
+            next(direction) = up & board[3][2] = vacant & board[4][2] = box & board[5][2] = man : box;
+            
+            next(direction) = down & board[3][2] = vacant & board[2][2] = man : man;
+            next(direction) = down & board[4][2] = vacant & board[3][2] = box & board[2][2] = man : man;
+            next(direction) = down & board[3][2] = vacant & board[2][2] = box & board[1][2] = man : box;
+            
+            next(direction) = right & board[3][2] = vacant & board[3][1] = man : man;
+            next(direction) = right & board[3][3] = vacant & board[3][2] = box & board[3][1] = man : man;
+            -- next(direction) = right & board[3][2] = vacant & board[3][1] = box & board[3][0] = man : box;
+            
+            next(direction) = left & board[3][2] = vacant & board[3][3] = man : man;
+            next(direction) = left & board[3][1] = vacant & board[3][2] = box & board[3][3] = man : man;
+            next(direction) = left & board[3][2] = vacant & board[3][3] = box & board[3][4] = man : box;
+            
+            TRUE: board[3][2];
+        esac;
+
+    next(board[3][3]) :=
+        case      
+            board[3][3] = wall : wall;
+            
+            board[3][3] = man & next(direction) = up    & board[2][3] = vacant : vacant;
+            board[3][3] = man & next(direction) = up    & board[2][3] = box & board[1][3] = vacant : vacant;
+                        
+            board[3][3] = man & next(direction) = down  & board[4][3] = vacant : vacant;
+            board[3][3] = man & next(direction) = down  & board[4][3] = box & board[5][3] = vacant : vacant;
+            
+            board[3][3] = man & next(direction) = right & board[3][4] = vacant : vacant;
+            board[3][3] = man & next(direction) = right & board[3][4] = box & board[3][5] = vacant : vacant;
+            
+            board[3][3] = man & next(direction) = left  & board[3][2] = vacant : vacant;
+            board[3][3] = man & next(direction) = left  & board[3][2] = box & board[3][1] = vacant : vacant;
+            
+            next(direction) = up & board[3][3] = vacant & board[4][3] = man : man;
+            next(direction) = up & board[2][3] = vacant & board[3][3] = box & board[4][3] = man : man;
+            next(direction) = up & board[3][3] = vacant & board[4][3] = box & board[5][3] = man : box;
+            
+            next(direction) = down & board[3][3] = vacant & board[2][3] = man : man;
+            next(direction) = down & board[4][3] = vacant & board[3][3] = box & board[2][3] = man : man;
+            next(direction) = down & board[3][3] = vacant & board[2][3] = box & board[1][3] = man : box;
+            
+            next(direction) = right & board[3][3] = vacant & board[3][2] = man : man;
+            next(direction) = right & board[3][4] = vacant & board[3][3] = box & board[3][2] = man : man;
+            next(direction) = right & board[3][3] = vacant & board[3][2] = box & board[3][1] = man : box;
+            
+            next(direction) = left & board[3][3] = vacant & board[3][4] = man : man;
+            next(direction) = left & board[3][2] = vacant & board[3][3] = box & board[3][4] = man : man;
+            next(direction) = left & board[3][3] = vacant & board[3][4] = box & board[3][5] = man : box;
+            
+            TRUE: board[3][3];
+        esac;
+
+    next(board[3][4]) :=
+        case      
+            board[3][4] = wall : wall;
+            
+            board[3][4] = man & next(direction) = up    & board[2][4] = vacant : vacant;
+            board[3][4] = man & next(direction) = up    & board[2][4] = box & board[1][4] = vacant : vacant;
+                        
+            board[3][4] = man & next(direction) = down  & board[4][4] = vacant : vacant;
+            board[3][4] = man & next(direction) = down  & board[4][4] = box & board[5][4] = vacant : vacant;
+            
+            board[3][4] = man & next(direction) = right & board[3][5] = vacant : vacant;
+            -- board[3][4] = man & next(direction) = right & board[3][5] = box & board[3][6] = vacant : vacant;
+            
+            board[3][4] = man & next(direction) = left  & board[3][3] = vacant : vacant;
+            board[3][4] = man & next(direction) = left  & board[3][3] = box & board[3][2] = vacant : vacant;
+            
+            next(direction) = up & board[3][4] = vacant & board[4][4] = man : man;
+            next(direction) = up & board[2][4] = vacant & board[3][4] = box & board[4][4] = man : man;
+            next(direction) = up & board[3][4] = vacant & board[4][4] = box & board[5][4] = man : box;
+            
+            next(direction) = down & board[3][4] = vacant & board[2][4] = man : man;
+            next(direction) = down & board[4][4] = vacant & board[3][4] = box & board[2][4] = man : man;
+            next(direction) = down & board[3][4] = vacant & board[2][4] = box & board[1][4] = man : box;
+            
+            next(direction) = right & board[3][4] = vacant & board[3][3] = man : man;
+            next(direction) = right & board[3][5] = vacant & board[3][4] = box & board[3][3] = man : man;
+            next(direction) = right & board[3][4] = vacant & board[3][3] = box & board[3][2] = man : box;
+            
+            next(direction) = left & board[3][4] = vacant & board[3][5] = man : man;
+            next(direction) = left & board[3][3] = vacant & board[3][4] = box & board[3][5] = man : man;
+            -- next(direction) = left & board[3][4] = vacant & board[3][5] = box & board[3][6] = man : box;
+            
+            TRUE: board[3][4];
+        esac;
+
+    next(board[3][5]) :=
+        case      
+            board[3][5] = wall : wall;
+            
+            board[3][5] = man & next(direction) = up    & board[2][5] = vacant : vacant;
+            board[3][5] = man & next(direction) = up    & board[2][5] = box & board[1][5] = vacant : vacant;
+                        
+            board[3][5] = man & next(direction) = down  & board[4][5] = vacant : vacant;
+            board[3][5] = man & next(direction) = down  & board[4][5] = box & board[5][5] = vacant : vacant;
+            
+            -- board[3][5] = man & next(direction) = right & board[3][6] = vacant : vacant;
+            -- board[3][5] = man & next(direction) = right & board[3][6] = box & board[3][7] = vacant : vacant;
+            
+            board[3][5] = man & next(direction) = left  & board[3][4] = vacant : vacant;
+            board[3][5] = man & next(direction) = left  & board[3][4] = box & board[3][3] = vacant : vacant;
+            
+            next(direction) = up & board[3][5] = vacant & board[4][5] = man : man;
+            next(direction) = up & board[2][5] = vacant & board[3][5] = box & board[4][5] = man : man;
+            next(direction) = up & board[3][5] = vacant & board[4][5] = box & board[5][5] = man : box;
+            
+            next(direction) = down & board[3][5] = vacant & board[2][5] = man : man;
+            next(direction) = down & board[4][5] = vacant & board[3][5] = box & board[2][5] = man : man;
+            next(direction) = down & board[3][5] = vacant & board[2][5] = box & board[1][5] = man : box;
+            
+            next(direction) = right & board[3][5] = vacant & board[3][4] = man : man;
+            -- next(direction) = right & board[3][6] = vacant & board[3][5] = box & board[3][4] = man : man;
+            next(direction) = right & board[3][5] = vacant & board[3][4] = box & board[3][3] = man : box;
+            
+            -- next(direction) = left & board[3][5] = vacant & board[3][6] = man : man;
+            -- next(direction) = left & board[3][4] = vacant & board[3][5] = box & board[3][6] = man : man;
+            -- next(direction) = left & board[3][5] = vacant & board[3][6] = box & board[3][7] = man : box;
+            
+            TRUE: board[3][5];
+        esac;
+
+    next(board[4][1]) :=
+        case      
+            board[4][1] = wall : wall;
+            
+            board[4][1] = man & next(direction) = up    & board[3][1] = vacant : vacant;
+            board[4][1] = man & next(direction) = up    & board[3][1] = box & board[2][1] = vacant : vacant;
+                        
+            board[4][1] = man & next(direction) = down  & board[5][1] = vacant : vacant;
+            -- board[4][1] = man & next(direction) = down  & board[5][1] = box & board[6][1] = vacant : vacant;
+            
+            board[4][1] = man & next(direction) = right & board[4][2] = vacant : vacant;
+            board[4][1] = man & next(direction) = right & board[4][2] = box & board[4][3] = vacant : vacant;
+            
+            -- board[4][1] = man & next(direction) = left  & board[4][0] = vacant : vacant;
+            -- board[4][1] = man & next(direction) = left  & board[4][0] = box & board[4][-1] = vacant : vacant;
+            
+            next(direction) = up & board[4][1] = vacant & board[5][1] = man : man;
+            next(direction) = up & board[3][1] = vacant & board[4][1] = box & board[5][1] = man : man;
+            -- next(direction) = up & board[4][1] = vacant & board[5][1] = box & board[6][1] = man : box;
+            
+            next(direction) = down & board[4][1] = vacant & board[3][1] = man : man;
+            next(direction) = down & board[5][1] = vacant & board[4][1] = box & board[3][1] = man : man;
+            next(direction) = down & board[4][1] = vacant & board[3][1] = box & board[2][1] = man : box;
+            
+            -- next(direction) = right & board[4][1] = vacant & board[4][0] = man : man;
+            -- next(direction) = right & board[4][2] = vacant & board[4][1] = box & board[4][0] = man : man;
+            -- next(direction) = right & board[4][1] = vacant & board[4][0] = box & board[4][-1] = man : box;
+            
+            next(direction) = left & board[4][1] = vacant & board[4][2] = man : man;
+            -- next(direction) = left & board[4][0] = vacant & board[4][1] = box & board[4][2] = man : man;
+            next(direction) = left & board[4][1] = vacant & board[4][2] = box & board[4][3] = man : box;
+            
+            TRUE: board[4][1];
+        esac;
+
+    next(board[4][2]) :=
+        case      
+            board[4][2] = wall : wall;
+            
+            board[4][2] = man & next(direction) = up    & board[3][2] = vacant : vacant;
+            board[4][2] = man & next(direction) = up    & board[3][2] = box & board[2][2] = vacant : vacant;
+                        
+            board[4][2] = man & next(direction) = down  & board[5][2] = vacant : vacant;
+            -- board[4][2] = man & next(direction) = down  & board[5][2] = box & board[6][2] = vacant : vacant;
+            
+            board[4][2] = man & next(direction) = right & board[4][3] = vacant : vacant;
+            board[4][2] = man & next(direction) = right & board[4][3] = box & board[4][4] = vacant : vacant;
+            
+            board[4][2] = man & next(direction) = left  & board[4][1] = vacant : vacant;
+            -- board[4][2] = man & next(direction) = left  & board[4][1] = box & board[4][0] = vacant : vacant;
+            
+            next(direction) = up & board[4][2] = vacant & board[5][2] = man : man;
+            next(direction) = up & board[3][2] = vacant & board[4][2] = box & board[5][2] = man : man;
+            -- next(direction) = up & board[4][2] = vacant & board[5][2] = box & board[6][2] = man : box;
+            
+            next(direction) = down & board[4][2] = vacant & board[3][2] = man : man;
+            next(direction) = down & board[5][2] = vacant & board[4][2] = box & board[3][2] = man : man;
+            next(direction) = down & board[4][2] = vacant & board[3][2] = box & board[2][2] = man : box;
+            
+            next(direction) = right & board[4][2] = vacant & board[4][1] = man : man;
+            next(direction) = right & board[4][3] = vacant & board[4][2] = box & board[4][1] = man : man;
+            -- next(direction) = right & board[4][2] = vacant & board[4][1] = box & board[4][0] = man : box;
+            
+            next(direction) = left & board[4][2] = vacant & board[4][3] = man : man;
+            next(direction) = left & board[4][1] = vacant & board[4][2] = box & board[4][3] = man : man;
+            next(direction) = left & board[4][2] = vacant & board[4][3] = box & board[4][4] = man : box;
+            
+            TRUE: board[4][2];
+        esac;
+
+    next(board[4][3]) :=
+        case      
+            board[4][3] = wall : wall;
+            
+            board[4][3] = man & next(direction) = up    & board[3][3] = vacant : vacant;
+            board[4][3] = man & next(direction) = up    & board[3][3] = box & board[2][3] = vacant : vacant;
+                        
+            board[4][3] = man & next(direction) = down  & board[5][3] = vacant : vacant;
+            -- board[4][3] = man & next(direction) = down  & board[5][3] = box & board[6][3] = vacant : vacant;
+            
+            board[4][3] = man & next(direction) = right & board[4][4] = vacant : vacant;
+            board[4][3] = man & next(direction) = right & board[4][4] = box & board[4][5] = vacant : vacant;
+            
+            board[4][3] = man & next(direction) = left  & board[4][2] = vacant : vacant;
+            board[4][3] = man & next(direction) = left  & board[4][2] = box & board[4][1] = vacant : vacant;
+            
+            next(direction) = up & board[4][3] = vacant & board[5][3] = man : man;
+            next(direction) = up & board[3][3] = vacant & board[4][3] = box & board[5][3] = man : man;
+            -- next(direction) = up & board[4][3] = vacant & board[5][3] = box & board[6][3] = man : box;
+            
+            next(direction) = down & board[4][3] = vacant & board[3][3] = man : man;
+            next(direction) = down & board[5][3] = vacant & board[4][3] = box & board[3][3] = man : man;
+            next(direction) = down & board[4][3] = vacant & board[3][3] = box & board[2][3] = man : box;
+            
+            next(direction) = right & board[4][3] = vacant & board[4][2] = man : man;
+            next(direction) = right & board[4][4] = vacant & board[4][3] = box & board[4][2] = man : man;
+            next(direction) = right & board[4][3] = vacant & board[4][2] = box & board[4][1] = man : box;
+            
+            next(direction) = left & board[4][3] = vacant & board[4][4] = man : man;
+            next(direction) = left & board[4][2] = vacant & board[4][3] = box & board[4][4] = man : man;
+            next(direction) = left & board[4][3] = vacant & board[4][4] = box & board[4][5] = man : box;
+            
+            TRUE: board[4][3];
+        esac;
+
+    next(board[4][4]) :=
+        case      
+            board[4][4] = wall : wall;
+            
+            board[4][4] = man & next(direction) = up    & board[3][4] = vacant : vacant;
+            board[4][4] = man & next(direction) = up    & board[3][4] = box & board[2][4] = vacant : vacant;
+                        
+            board[4][4] = man & next(direction) = down  & board[5][4] = vacant : vacant;
+            -- board[4][4] = man & next(direction) = down  & board[5][4] = box & board[6][4] = vacant : vacant;
+            
+            board[4][4] = man & next(direction) = right & board[4][5] = vacant : vacant;
+            -- board[4][4] = man & next(direction) = right & board[4][5] = box & board[4][6] = vacant : vacant;
+            
+            board[4][4] = man & next(direction) = left  & board[4][3] = vacant : vacant;
+            board[4][4] = man & next(direction) = left  & board[4][3] = box & board[4][2] = vacant : vacant;
+            
+            next(direction) = up & board[4][4] = vacant & board[5][4] = man : man;
+            next(direction) = up & board[3][4] = vacant & board[4][4] = box & board[5][4] = man : man;
+            -- next(direction) = up & board[4][4] = vacant & board[5][4] = box & board[6][4] = man : box;
+            
+            next(direction) = down & board[4][4] = vacant & board[3][4] = man : man;
+            next(direction) = down & board[5][4] = vacant & board[4][4] = box & board[3][4] = man : man;
+            next(direction) = down & board[4][4] = vacant & board[3][4] = box & board[2][4] = man : box;
+            
+            next(direction) = right & board[4][4] = vacant & board[4][3] = man : man;
+            next(direction) = right & board[4][5] = vacant & board[4][4] = box & board[4][3] = man : man;
+            next(direction) = right & board[4][4] = vacant & board[4][3] = box & board[4][2] = man : box;
+            
+            next(direction) = left & board[4][4] = vacant & board[4][5] = man : man;
+            next(direction) = left & board[4][3] = vacant & board[4][4] = box & board[4][5] = man : man;
+            -- next(direction) = left & board[4][4] = vacant & board[4][5] = box & board[4][6] = man : box;
+            
+            TRUE: board[4][4];
+        esac;
+
+    next(board[4][5]) :=
+        case      
+            board[4][5] = wall : wall;
+            
+            board[4][5] = man & next(direction) = up    & board[3][5] = vacant : vacant;
+            board[4][5] = man & next(direction) = up    & board[3][5] = box & board[2][5] = vacant : vacant;
+                        
+            board[4][5] = man & next(direction) = down  & board[5][5] = vacant : vacant;
+            -- board[4][5] = man & next(direction) = down  & board[5][5] = box & board[6][5] = vacant : vacant;
+            
+            -- board[4][5] = man & next(direction) = right & board[4][6] = vacant : vacant;
+            -- board[4][5] = man & next(direction) = right & board[4][6] = box & board[4][7] = vacant : vacant;
+            
+            board[4][5] = man & next(direction) = left  & board[4][4] = vacant : vacant;
+            board[4][5] = man & next(direction) = left  & board[4][4] = box & board[4][3] = vacant : vacant;
+            
+            next(direction) = up & board[4][5] = vacant & board[5][5] = man : man;
+            next(direction) = up & board[3][5] = vacant & board[4][5] = box & board[5][5] = man : man;
+            -- next(direction) = up & board[4][5] = vacant & board[5][5] = box & board[6][5] = man : box;
+            
+            next(direction) = down & board[4][5] = vacant & board[3][5] = man : man;
+            next(direction) = down & board[5][5] = vacant & board[4][5] = box & board[3][5] = man : man;
+            next(direction) = down & board[4][5] = vacant & board[3][5] = box & board[2][5] = man : box;
+            
+            next(direction) = right & board[4][5] = vacant & board[4][4] = man : man;
+            -- next(direction) = right & board[4][6] = vacant & board[4][5] = box & board[4][4] = man : man;
+            next(direction) = right & board[4][5] = vacant & board[4][4] = box & board[4][3] = man : box;
+            
+            -- next(direction) = left & board[4][5] = vacant & board[4][6] = man : man;
+            -- next(direction) = left & board[4][4] = vacant & board[4][5] = box & board[4][6] = man : man;
+            -- next(direction) = left & board[4][5] = vacant & board[4][6] = box & board[4][7] = man : box;
+            
+            TRUE: board[4][5];
+        esac;
+
+    next(board[5][1]) :=
+        case      
+            board[5][1] = wall : wall;
+            
+            board[5][1] = man & next(direction) = up    & board[4][1] = vacant : vacant;
+            board[5][1] = man & next(direction) = up    & board[4][1] = box & board[3][1] = vacant : vacant;
+                        
+            -- board[5][1] = man & next(direction) = down  & board[6][1] = vacant : vacant;
+            -- board[5][1] = man & next(direction) = down  & board[6][1] = box & board[7][1] = vacant : vacant;
+            
+            board[5][1] = man & next(direction) = right & board[5][2] = vacant : vacant;
+            board[5][1] = man & next(direction) = right & board[5][2] = box & board[5][3] = vacant : vacant;
+            
+            -- board[5][1] = man & next(direction) = left  & board[5][0] = vacant : vacant;
+            -- board[5][1] = man & next(direction) = left  & board[5][0] = box & board[5][-1] = vacant : vacant;
+            
+            -- next(direction) = up & board[5][1] = vacant & board[6][1] = man : man;
+            -- next(direction) = up & board[4][1] = vacant & board[5][1] = box & board[6][1] = man : man;
+            -- next(direction) = up & board[5][1] = vacant & board[6][1] = box & board[7][1] = man : box;
+            
+            next(direction) = down & board[5][1] = vacant & board[4][1] = man : man;
+            -- next(direction) = down & board[6][1] = vacant & board[5][1] = box & board[4][1] = man : man;
+            next(direction) = down & board[5][1] = vacant & board[4][1] = box & board[3][1] = man : box;
+            
+            -- next(direction) = right & board[5][1] = vacant & board[5][0] = man : man;
+            -- next(direction) = right & board[5][2] = vacant & board[5][1] = box & board[5][0] = man : man;
+            -- next(direction) = right & board[5][1] = vacant & board[5][0] = box & board[5][-1] = man : box;
+            
+            next(direction) = left & board[5][1] = vacant & board[5][2] = man : man;
+            -- next(direction) = left & board[5][0] = vacant & board[5][1] = box & board[5][2] = man : man;
+            next(direction) = left & board[5][1] = vacant & board[5][2] = box & board[5][3] = man : box;
+            
+            TRUE: board[5][1];
+        esac;
+
+    next(board[5][2]) :=
+        case      
+            board[5][2] = wall : wall;
+            
+            board[5][2] = man & next(direction) = up    & board[4][2] = vacant : vacant;
+            board[5][2] = man & next(direction) = up    & board[4][2] = box & board[3][2] = vacant : vacant;
+                        
+            -- board[5][2] = man & next(direction) = down  & board[6][2] = vacant : vacant;
+            -- board[5][2] = man & next(direction) = down  & board[6][2] = box & board[7][2] = vacant : vacant;
+            
+            board[5][2] = man & next(direction) = right & board[5][3] = vacant : vacant;
+            board[5][2] = man & next(direction) = right & board[5][3] = box & board[5][4] = vacant : vacant;
+            
+            board[5][2] = man & next(direction) = left  & board[5][1] = vacant : vacant;
+            -- board[5][2] = man & next(direction) = left  & board[5][1] = box & board[5][0] = vacant : vacant;
+            
+            -- next(direction) = up & board[5][2] = vacant & board[6][2] = man : man;
+            -- next(direction) = up & board[4][2] = vacant & board[5][2] = box & board[6][2] = man : man;
+            -- next(direction) = up & board[5][2] = vacant & board[6][2] = box & board[7][2] = man : box;
+            
+            next(direction) = down & board[5][2] = vacant & board[4][2] = man : man;
+            -- next(direction) = down & board[6][2] = vacant & board[5][2] = box & board[4][2] = man : man;
+            next(direction) = down & board[5][2] = vacant & board[4][2] = box & board[3][2] = man : box;
+            
+            next(direction) = right & board[5][2] = vacant & board[5][1] = man : man;
+            next(direction) = right & board[5][3] = vacant & board[5][2] = box & board[5][1] = man : man;
+            -- next(direction) = right & board[5][2] = vacant & board[5][1] = box & board[5][0] = man : box;
+            
+            next(direction) = left & board[5][2] = vacant & board[5][3] = man : man;
+            next(direction) = left & board[5][1] = vacant & board[5][2] = box & board[5][3] = man : man;
+            next(direction) = left & board[5][2] = vacant & board[5][3] = box & board[5][4] = man : box;
+            
+            TRUE: board[5][2];
+        esac;
+
+    next(board[5][3]) :=
+        case      
+            board[5][3] = wall : wall;
+            
+            board[5][3] = man & next(direction) = up    & board[4][3] = vacant : vacant;
+            board[5][3] = man & next(direction) = up    & board[4][3] = box & board[3][3] = vacant : vacant;
+                        
+            -- board[5][3] = man & next(direction) = down  & board[6][3] = vacant : vacant;
+            -- board[5][3] = man & next(direction) = down  & board[6][3] = box & board[7][3] = vacant : vacant;
+            
+            board[5][3] = man & next(direction) = right & board[5][4] = vacant : vacant;
+            board[5][3] = man & next(direction) = right & board[5][4] = box & board[5][5] = vacant : vacant;
+            
+            board[5][3] = man & next(direction) = left  & board[5][2] = vacant : vacant;
+            board[5][3] = man & next(direction) = left  & board[5][2] = box & board[5][1] = vacant : vacant;
+            
+            -- next(direction) = up & board[5][3] = vacant & board[6][3] = man : man;
+            -- next(direction) = up & board[4][3] = vacant & board[5][3] = box & board[6][3] = man : man;
+            -- next(direction) = up & board[5][3] = vacant & board[6][3] = box & board[7][3] = man : box;
+            
+            next(direction) = down & board[5][3] = vacant & board[4][3] = man : man;
+            -- next(direction) = down & board[6][3] = vacant & board[5][3] = box & board[4][3] = man : man;
+            next(direction) = down & board[5][3] = vacant & board[4][3] = box & board[3][3] = man : box;
+            
+            next(direction) = right & board[5][3] = vacant & board[5][2] = man : man;
+            next(direction) = right & board[5][4] = vacant & board[5][3] = box & board[5][2] = man : man;
+            next(direction) = right & board[5][3] = vacant & board[5][2] = box & board[5][1] = man : box;
+            
+            next(direction) = left & board[5][3] = vacant & board[5][4] = man : man;
+            next(direction) = left & board[5][2] = vacant & board[5][3] = box & board[5][4] = man : man;
+            next(direction) = left & board[5][3] = vacant & board[5][4] = box & board[5][5] = man : box;
+            
+            TRUE: board[5][3];
+        esac;
+
+    next(board[5][4]) :=
+        case      
+            board[5][4] = wall : wall;
+            
+            board[5][4] = man & next(direction) = up    & board[4][4] = vacant : vacant;
+            board[5][4] = man & next(direction) = up    & board[4][4] = box & board[3][4] = vacant : vacant;
+                        
+            -- board[5][4] = man & next(direction) = down  & board[6][4] = vacant : vacant;
+            -- board[5][4] = man & next(direction) = down  & board[6][4] = box & board[7][4] = vacant : vacant;
+            
+            board[5][4] = man & next(direction) = right & board[5][5] = vacant : vacant;
+            -- board[5][4] = man & next(direction) = right & board[5][5] = box & board[5][6] = vacant : vacant;
+            
+            board[5][4] = man & next(direction) = left  & board[5][3] = vacant : vacant;
+            board[5][4] = man & next(direction) = left  & board[5][3] = box & board[5][2] = vacant : vacant;
+            
+            -- next(direction) = up & board[5][4] = vacant & board[6][4] = man : man;
+            -- next(direction) = up & board[4][4] = vacant & board[5][4] = box & board[6][4] = man : man;
+            -- next(direction) = up & board[5][4] = vacant & board[6][4] = box & board[7][4] = man : box;
+            
+            next(direction) = down & board[5][4] = vacant & board[4][4] = man : man;
+            -- next(direction) = down & board[6][4] = vacant & board[5][4] = box & board[4][4] = man : man;
+            next(direction) = down & board[5][4] = vacant & board[4][4] = box & board[3][4] = man : box;
+            
+            next(direction) = right & board[5][4] = vacant & board[5][3] = man : man;
+            next(direction) = right & board[5][5] = vacant & board[5][4] = box & board[5][3] = man : man;
+            next(direction) = right & board[5][4] = vacant & board[5][3] = box & board[5][2] = man : box;
+            
+            next(direction) = left & board[5][4] = vacant & board[5][5] = man : man;
+            next(direction) = left & board[5][3] = vacant & board[5][4] = box & board[5][5] = man : man;
+            -- next(direction) = left & board[5][4] = vacant & board[5][5] = box & board[5][6] = man : box;
+            
+            TRUE: board[5][4];
+        esac;
+
+    next(board[5][5]) :=
+        case      
+            board[5][5] = wall : wall;
+            
+            board[5][5] = man & next(direction) = up    & board[4][5] = vacant : vacant;
+            board[5][5] = man & next(direction) = up    & board[4][5] = box & board[3][5] = vacant : vacant;
+                        
+            -- board[5][5] = man & next(direction) = down  & board[6][5] = vacant : vacant;
+            -- board[5][5] = man & next(direction) = down  & board[6][5] = box & board[7][5] = vacant : vacant;
+            
+            -- board[5][5] = man & next(direction) = right & board[5][6] = vacant : vacant;
+            -- board[5][5] = man & next(direction) = right & board[5][6] = box & board[5][7] = vacant : vacant;
+            
+            board[5][5] = man & next(direction) = left  & board[5][4] = vacant : vacant;
+            board[5][5] = man & next(direction) = left  & board[5][4] = box & board[5][3] = vacant : vacant;
+            
+            -- next(direction) = up & board[5][5] = vacant & board[6][5] = man : man;
+            -- next(direction) = up & board[4][5] = vacant & board[5][5] = box & board[6][5] = man : man;
+            -- next(direction) = up & board[5][5] = vacant & board[6][5] = box & board[7][5] = man : box;
+            
+            next(direction) = down & board[5][5] = vacant & board[4][5] = man : man;
+            -- next(direction) = down & board[6][5] = vacant & board[5][5] = box & board[4][5] = man : man;
+            next(direction) = down & board[5][5] = vacant & board[4][5] = box & board[3][5] = man : box;
+            
+            next(direction) = right & board[5][5] = vacant & board[5][4] = man : man;
+            -- next(direction) = right & board[5][6] = vacant & board[5][5] = box & board[5][4] = man : man;
+            next(direction) = right & board[5][5] = vacant & board[5][4] = box & board[5][3] = man : box;
+            
+            -- next(direction) = left & board[5][5] = vacant & board[5][6] = man : man;
+            -- next(direction) = left & board[5][4] = vacant & board[5][5] = box & board[5][6] = man : man;
+            -- next(direction) = left & board[5][5] = vacant & board[5][6] = box & board[5][7] = man : box;
+            
+            TRUE: board[5][5];
+        esac;
+
+CTLSPEC NAME ctl_not_victory := AG !victory
+LTLSPEC NAME ltl_not_victory := G !victory

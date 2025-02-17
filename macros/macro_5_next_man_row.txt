@@ -1,0 +1,2 @@
+        man_row = ROW & man_col = COL & man_row < max_y+(-1) & next(direction) = down & (board[ROW+1][COL] = vacant | board[ROW+1][COL] = box & board[ROW+2][COL] = vacant) : man_row+1;
+        

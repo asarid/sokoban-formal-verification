@@ -1,0 +1,14 @@
+MODULE main
+
+  VAR
+      board   : array 1..MAX_ROW_MINUS_ONE of array 1..MAX_COL_MINUS_ONE of {wall, box, man, vacant};
+      
+      direction : {stay, up, down, right, left};
+
+  
+  DEFINE
+      
+    min_x := 1;
+    max_x := MAX_COL_MINUS_ONE;
+    min_y := 1;
+    max_y := MAX_ROW_MINUS_ONE;

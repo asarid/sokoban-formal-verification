@@ -1,0 +1,4 @@
+    can_move_up    := man_row > 1  &  (board[man_row+(-1)][man_col] = vacant | board[man_row+(-1)][man_col] = box & board[man_row+(-2)][man_col] = vacant);
+    can_move_down  := man_row < MAX_ROW_MINUS_ONE  &  (board[man_row+1][man_col] = vacant | board[man_row+1][man_col] = box & board[man_row+2][man_col] = vacant);
+    can_move_right := man_col < MAX_COL_MINUS_ONE  &  (board[man_row][man_col+1] = vacant | board[man_row][man_col+1] = box & board[man_row][man_col+2] = vacant);
+    can_move_left  := man_col > 1  &  (board[man_row][man_col+(-1)] = vacant | board[man_row][man_col+(-1)] = box & board[man_row][man_col+(-2)] = vacant);

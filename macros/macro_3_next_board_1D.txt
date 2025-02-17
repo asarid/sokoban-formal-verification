@@ -1,0 +1,27 @@
+    next(board[NUM_C*ROW+COL]) :=
+        case      
+            board[NUM_C*ROW+COL] = wall : wall;
+            board[NUM_C*ROW+COL] = man  : vacant;
+
+            -- board[NUM_C*ROW+COL] = man & (next(direction) = up    & board[NUM_C*(ROW+(-1))+COL] != wall & !(board[NUM_C*(ROW+(-1))+COL] = box & (board[NUM_C*(ROW+(-2))+COL] = box | board[NUM_C*(ROW+(-2))+COL] = wall))) : vacant;
+            -- board[NUM_C*ROW+COL] = man & (next(direction) = down  & board[ROW+1][COL] != wall    & !(board[ROW+1][COL] = box    & (board[ROW+2][COL] = box    | board[ROW+2][COL] = wall)))    : vacant;
+            -- board[NUM_C*ROW+COL] = man & (next(direction) = right & board[ROW][COL+1] != wall    & !(board[ROW][COL+1] = box    & (board[ROW][COL+2] = box    | board[ROW][COL+2] = wall)))    : vacant;
+            -- board[NUM_C*ROW+COL] = man & (next(direction) = left  & board[ROW][COL+(-1)] != wall & !(board[ROW][COL+(-1)] = box & (board[ROW][COL+(-2)] = box | board[ROW][COL+(-2)] = wall))) : vacant;
+            
+            -- !(board[ROW+1][COL] = man | board[ROW+2][COL] = man | board[ROW+(-1)][COL] = man | board[ROW+(-2)][COL] = man | board[ROW][COL+1] = man | board[ROW][COL+2] = man | board[ROW][COL+(-1)] = man | board[ROW][COL+(-2)] = man) : board[ROW][COL];
+            !(man_row = ROW & (man_col <= COL+2 | man_col >= COL+(-2)) | man_col = COL & (man_row <= ROW+2 | man_row >= ROW+(-2))) : board[NUM_C*ROW+COL];
+
+            next(direction) = up & (board[NUM_C*ROW+COL] = vacant | board[NUM_C*(ROW+(-1))+COL] = vacant & board[NUM_C*ROW+COL] = box) & board[NUM_C*(ROW+1)+COL] = man : man;
+            next(direction) = up & board[NUM_C*ROW+COL] = vacant & board[NUM_C*(ROW+1)+COL] = box & board[NUM_C*(ROW+2)+COL] = man : box;
+
+            next(direction) = down & (board[NUM_C*ROW+COL] = vacant | board[NUM_C*(ROW+1)+COL] = vacant & board[NUM_C*ROW+COL] = box) & board[NUM_C*(ROW+(-1))+COL] = man : man;
+            next(direction) = down & board[NUM_C*ROW+COL] = vacant & board[NUM_C*(ROW+(-1))+COL] = box & board[NUM_C*(ROW+(-2))+COL] = man : box;
+
+            next(direction) = right & (board[NUM_C*ROW+COL] = vacant | board[NUM_C*ROW+COL+1] = vacant & board[NUM_C*ROW+COL] = box) & board[NUM_C*ROW+COL+(-1)] = man : man;
+            next(direction) = right & board[NUM_C*ROW+COL] = vacant & board[NUM_C*ROW+COL+(-1)] = box & board[NUM_C*ROW+COL+(-2)] = man : box;
+
+            next(direction) = left & (board[NUM_C*ROW+COL] = vacant | board[NUM_C*ROW+COL+(-1)] = vacant & board[NUM_C*ROW+COL] = box) & board[NUM_C*ROW+COL+1] = man : man;
+            next(direction) = left & board[NUM_C*ROW+COL] = vacant & board[NUM_C*ROW+COL+1] = box & board[NUM_C*ROW+COL+2] = man : box;
+
+            TRUE: board[NUM_C*ROW+COL];
+        esac;
