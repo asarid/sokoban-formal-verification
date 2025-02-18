@@ -17,7 +17,7 @@ def copy_xsb_to_output(input_file, output_dir):
     output_xsb_file = os.path.join(output_dir, os.path.basename(input_file))
     with open(input_file, 'r') as f_in, open(output_xsb_file, 'w') as f_out:
         f_out.write(f_in.read())
-    print(f"Copied input XSB board to: {output_xsb_file}")
+    print(f"\nCopied input XSB board to: {output_xsb_file}")
 
 
 def comment_out_illegal_two_brackets(strings, range1, range2 = []):
@@ -298,6 +298,7 @@ def parse_nuxmv_output(nuxmv_output: str, k_steps = 40) -> str:
     Args:
         nuxmv_output (str): The output of the nuXmv command.
         k_steps (int, optional): The bound of steps in BMC (SAT), required for parsing a "no solution" option in SAT output
+
     Returns:
         str: The solution in LURD format, or "There is no solution".
     """
@@ -359,6 +360,11 @@ def parse_nuxmv_output(nuxmv_output: str, k_steps = 40) -> str:
 
 
 def main():
+
+    #####################################
+    ### Check inputs and handle files ###
+    #####################################
+
     # Check that the correct number of arguments is provided
     if len(sys.argv) != 3:
         print("Usage: python file_name.py <input board> <output directory>")
@@ -377,17 +383,21 @@ def main():
     if not os.path.isdir(output_dir):
         os.makedirs(output_dir)
         print(f"The output directory '{output_dir}' was not exist; A new directory created")
-        sys.exit(1)
 
     # remove old .xsb files
     for f in os.listdir(output_dir):
         if re.search(r'^.*\.xsb$', f): # Matches any string ending with ".xsb"
             os.remove(os.path.join(output_dir, f))
 
-
     # Copy the input XSB board to the output directory
     copy_xsb_to_output(input_file, output_dir)
 
+
+
+
+    ############################################
+    ### Analyze .xsb file and generate model ###
+    ############################################
 
     # Generate the .smv file
     board = analyze_xsb_file(input_file)
@@ -395,18 +405,22 @@ def main():
     generate_nuxmv_file(board, smv_file)
 
 
-    ################################
-    # Run nuXmv and get the output #
-    ################################
+
+
+    ####################################
+    ### Run nuXmv and get the output ###
+    ####################################
     
     # Run with BDD engine
     nuxmv_output_file = os.path.join(output_dir, "nuxmv_output_BDD.txt")
     nuxmv_output_BDD, exec_time_BDD = run_nuxmv(smv_file, nuxmv_output_file, f"go\ncheck_ctlspec -P ctl_not_victory\nquit")
+    print(f"\nExecution (BDD) completed in {exec_time_BDD:.6f} seconds")
 
     # Run with SAT engine
     nuxmv_output_file = os.path.join(output_dir, "nuxmv_output_SAT.txt")
     k_steps = 40
     nuxmv_output_SAT, exec_time_SAT = run_nuxmv(smv_file, nuxmv_output_file, f"go_bmc\ncheck_ltlspec_bmc -P ltl_not_victory -k {k_steps}\nquit")
+    print(f"Execution (SAT) completed in {exec_time_SAT:.6f} seconds\n")
 
 
     # Parse the solution from nuXmv output
